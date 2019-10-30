@@ -1,0 +1,8 @@
+{
+  "domain": "wechatwork",
+  "name": "wechatwork",
+  "documentation": "企业微信推送",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["hansey.z@gmail.com"]
+}
