@@ -88,12 +88,13 @@ class QiyeweichatNotificationService(BaseNotificationService):
             _LOGGER.debug("Uploading media " + path + " to WeChat servicers")
             r = requests.post(curl, files=files)
             #任务超时未处理
-            _LOGGER.debug(r.text)
+            #_LOGGER.debug(r.text)
+            if int(json.loads(r.text)['errcode']) != 0:
+                _LOGGER.error("Upload failed. Error Code " + str(json.loads(r.text)['errcode']) + ". " + str(json.loads(r.text)['errmsg']))
+                return
             media_id = str(json.loads(r.text)['media_id'])
             if int(json.loads(r.text)['errcode']) == 0:
                 _LOGGER.debug("Upload completed! media_id is "+media_id)
-            else:
-                _LOGGER.error("Upload failed. Error Code " + str(json.loads(r.text)['errcode']) + ". " + str(json.loads(r.text)['errmsg']))
             if media_type == "video":
                 if title is None:
                     content = '{"media_id":"%s", "description":"%s"}' % (media_id, message)
