@@ -1,8 +1,12 @@
 import logging
+import time
+import datetime
 import requests
 import json,os
 import voluptuous as vol
 import sys
+
+from requests.exceptions import Timeout
 
 from homeassistant.components.notify import (
     ATTR_MESSAGE, ATTR_TITLE, ATTR_DATA, ATTR_TARGET, PLATFORM_SCHEMA, BaseNotificationService)
@@ -83,12 +87,16 @@ class QiyeweichatNotificationService(BaseNotificationService):
                 path = data.get(ATTR_FILE, None)
                 media_type = "file"
                 msgtype = "file"
-            curl = 'https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=' + self.get_access_token() + '&type=' + media_type
-            files = {media_type: open(path, 'rb')}
-            _LOGGER.debug("Uploading media " + path + " to WeChat servicers")
-            r = requests.post(curl, files=files)
-            #任务超时未处理
-            #_LOGGER.debug(r.text)
+            try:
+                curl = 'https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=' + self.get_access_token() + '&type=' + media_type
+                files = {media_type: open(path, 'rb')}
+                _LOGGER.debug("Uploading media " + path + " to WeChat servicers")
+                r = requests.post(curl, files=files, timeout=(20,180))
+            except requests.Timeout: 
+                _LOGGER.error("File upload timeout, please try again later.")
+                return
+            else:
+                pass
             if int(json.loads(r.text)['errcode']) != 0:
                 _LOGGER.error("Upload failed. Error Code " + str(json.loads(r.text)['errcode']) + ". " + str(json.loads(r.text)['errmsg']))
                 return
