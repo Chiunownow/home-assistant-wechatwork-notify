@@ -111,7 +111,7 @@ class QiyeweichatNotificationService(BaseNotificationService):
             if media_type == "image":
                 if title is None:
                     title = message
-                content = '{"articles":[{"title":"%s","thumb_media_id":"%s","digest":"%s"}]}' % (title, media_id, message)
+                content = '{"articles":[{"title":"%s","thumb_media_id":"%s","content":"%s","digest":"%s"}]}' % (title, media_id, message, message)
             if media_type == "file":
                 send_file = '{"touser":"%s","msgtype":"file","agentid":%s,"file":{"media_id":"%s"}}' % (self.TOUSER,self.AGENTID,media_id)
                 send_file8 = send_file.encode('utf-8')
